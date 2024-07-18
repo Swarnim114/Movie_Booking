@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
-
-import { Button, Table } from "antd";
+import { Button, Table, Rate } from "antd";
 import MovieForm from "./MovieForm";
 import { hideLoading, showLoading } from "../../redux/loaderSlice";
 import { getAllMovies } from "../../calls/movies";
@@ -8,7 +7,6 @@ import { useDispatch } from "react-redux";
 import moment from "moment";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import DeleteMovieModal from "./DeleteMovieModal";
-
 
 function MovieList() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -19,21 +17,10 @@ function MovieList() {
 
   const dispatch = useDispatch();
 
-  console.log(selectedMovie);
-
   const getData = async () => {
     dispatch(showLoading());
-
     const response = await getAllMovies();
-
-    const allMovies = response.data;
-
-    setMovies(
-      allMovies.map(function (item) {
-        return { ...item, key: `movie${item._id}` };
-      })
-    );
-    console.log(movies);
+    setMovies(response.data.map(item => ({ ...item, key: item._id })));
     dispatch(hideLoading());
   };
 
@@ -41,16 +28,9 @@ function MovieList() {
     {
       title: "Poster",
       dataIndex: "poster",
-      render: (text, data) => {
-        return (
-          <img
-            width="75"
-            height="115"
-            style={{ objectFit: "cover" }}
-            src={data.poster}
-          />
-        );
-      },
+      render: (text, data) => (
+          <img width="75" height="115" style={{ objectFit: "cover" }} src={data.poster} alt="Poster" />
+      ),
     },
     {
       title: "Movie Name",
@@ -63,9 +43,7 @@ function MovieList() {
     {
       title: "Duration",
       dataIndex: "duration",
-      render: (text) => {
-        return `${text} Min`;
-      },
+      render: (text) => `${text} Min`,
     },
     {
       title: "Genre",
@@ -78,35 +56,25 @@ function MovieList() {
     {
       title: "Release Date",
       dataIndex: "releaseDate",
-      render: (text, data) => {
-        return moment(data.releaseDate).format("MM-DD-YYYY");
-      },
+      render: (text, data) => moment(data.releaseDate).format("MM-DD-YYYY"),
+    },
+    {
+      title: "Rating",
+      dataIndex: "rating",
+      render: (text) => <Rate allowHalf disabled value={text} />,
     },
     {
       title: "Action",
-      render: (text, data) => {
-        return (
+      render: (text, data) => (
           <div>
-            <Button
-              onClick={() => {
-                setIsModalOpen(true);
-                setSelectedMovie(data);
-                setFormType("edit");
-              }}
-            >
+            <Button onClick={() => { setIsModalOpen(true); setSelectedMovie(data); setFormType("edit"); }}>
               <EditOutlined />
             </Button>
-            <Button
-              onClick={() => {
-                setIsDeleteModalOpen(true);
-                setSelectedMovie(data);
-              }}
-            >
+            <Button className="ml-3" onClick={() => { setIsDeleteModalOpen(true); setSelectedMovie(data); }}>
               <DeleteOutlined />
             </Button>
           </div>
-        );
-      },
+      ),
     },
   ];
 
@@ -115,40 +83,33 @@ function MovieList() {
   }, []);
 
   return (
-    <>
-      <div className="d-flex justify-content-end">
-        <Button
-          onClick={() => {
-            setIsModalOpen(true);
-            setFormType("add");
-          }}
-        >
-          Add Movie
-        </Button>
+      <div>
+        <div className="d-flex justify-content-end mb-2">
+          <Button type="primary" onClick={() => setIsModalOpen(true)}>
+            Add Movie
+          </Button>
+        </div>
+        <Table columns={tableHeadings} dataSource={movies} />
+        {isModalOpen && (
+            <MovieForm
+                isModalOpen={isModalOpen}
+                setIsModalOpen={setIsModalOpen}
+                selectedMovie={selectedMovie}
+                setSelectedMovie={setSelectedMovie}
+                formType={formType}
+                getData={getData}
+            />
+        )}
+        {isDeleteModalOpen && (
+            <DeleteMovieModal
+                isDeleteModalOpen={isDeleteModalOpen}
+                setIsDeleteModalOpen={setIsDeleteModalOpen}
+                selectedMovie={selectedMovie}
+                setSelectedMovie={setSelectedMovie}
+                getData={getData}
+            />
+        )}
       </div>
-
-      <Table dataSource={movies} columns={tableHeadings} />
-      {isModalOpen && (
-        <MovieForm
-          isModalOpen={isModalOpen}
-          setIsModalOpen={setIsModalOpen}
-          selectedMovie={selectedMovie}
-          formType={formType}
-          setSelectedMovie={setSelectedMovie}
-          getData={getData}
-        />
-      )}
-
-      {isDeleteModalOpen && (
-        <DeleteMovieModal
-          isDeleteModalOpen={isDeleteModalOpen}
-          selectedMovie={selectedMovie}
-          setIsDeleteModalOpen={setIsDeleteModalOpen}
-          setSelectedMovie={setSelectedMovie}
-          getData={getData}
-        />
-      )}
-    </>
   );
 }
 
