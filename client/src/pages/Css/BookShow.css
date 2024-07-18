@@ -7,3 +7,60 @@
     display: flex;
     align-items: center;
 }
+
+.legend {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    margin-right: 15px;
+}
+
+.legend-item span {
+    margin-left: 5px;
+}
+
+.legend-item.bestseller::before {
+    content: "";
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    background-color: #FFD700; /* gold color */
+    border: 1px solid #000;
+    border-radius: 3px;
+}
+
+.legend-item.available::before {
+    content: "";
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    background-color: #FFFFFF; /* white color */
+    border: 1px solid #000;
+    border-radius: 3px;
+}
+
+.legend-item.selected::before {
+    content: "";
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    background-color: #00FF00; /* green color */
+    border: 1px solid #000;
+    border-radius: 3px;
+}
+
+.legend-item.sold::before {
+    content: "";
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    background-color: #C0C0C0; /* grey color */
+    border: 1px solid #000;
+    border-radius: 3px;
+}
